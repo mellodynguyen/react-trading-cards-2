@@ -49,6 +49,9 @@ const tradingCardData = [
   },
 ];
 
+
+
+
 function TradingCard(props) {
   return (
     <div className="card">
@@ -59,10 +62,70 @@ function TradingCard(props) {
   );
 }
 
+// from further study
+function AddTradingCard(props) {
+  const [name, setName] = React.useState("");
+  const [skill, setSkill] = React.useState("");
+  function addNewCard() {
+    // TO BE IMPLEMENTED
+    // to get what is currently typed in the name field, use state value 'name'
+    // to get what is currently typed in skill field, use state value 'skill'
+    fetch('/add-card', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"name": name, "skill": skill}),
+    })
+      .then((response) => response.json())
+      .then((jsonResponse) => {
+        // alert(`Card added! Response: ${jsonResponse}`)
+        const cardAdded = jsonResponse.cardAdded;
+        props.addCard(cardAdded);
+      });
+    
+  }
+  return (
+    <React.Fragment>
+      <h2>Add New Trading Card</h2>
+      <label htmlFor="nameInput">Name</label>
+      <input
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        id="nameInput"
+        style={{ marginLeft: "5px" }}
+      ></input>
+      <label
+        htmlFor="skillInput"
+        style={{ marginLeft: "10px", marginRight: "5px" }}
+      >
+        Skill
+      </label>
+      <input
+        value={skill}
+        onChange={(event) => setSkill(event.target.value)}
+        id="skillInput"
+      ></input>
+      <button style={{ marginLeft: "10px" }} onClick={addNewCard}>
+        Add
+      </button>
+    </React.Fragment>
+  );
+}
+
+
 function TradingCardContainer() {
 
   // TradingCardContainer needs to know about all the trading cards
   const [cards, setCards] = React.useState([])
+
+  // from further study 
+  function addCard(newCard) {
+    // [...cards] makes a copy of cards. Similar to currentCards = cards[:] in Python
+    const currentCards = [...cards];
+    // [...currentCards, newCard] is an array containing all elements in currentCards followed by newCard
+    setCards([...currentCards, newCard]);
+  }
 
   React.useEffect(() => {
     // stuff we want to happen every time the component renders
@@ -101,43 +164,21 @@ function TradingCardContainer() {
     );
   }
 
-  return <div className="grid">{tradingCards}</div>;
-}
-
-ReactDOM.render(<TradingCardContainer />, document.getElementById('container'));
-
-
-function AddTradingCard(props) {
-  const [name, setName] = React.useState("");
-  const [skill, setSkill] = React.useState("");
-  function addNewCard() {
-    // TO BE IMPLEMENTED
-    alert('trying to add new card');
-  }
+  // further study had changed <div> to <React.Fragment> to carry multiple
+  // things in the return statement 
   return (
     <React.Fragment>
-      <h2>Add New Trading Card</h2>
-      <label htmlFor="nameInput">Name</label>
-      <input
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        id="nameInput"
-        style={{ marginLeft: "5px" }}
-      ></input>
-      <label
-        htmlFor="skillInput"
-        style={{ marginLeft: "10px", marginRight: "5px" }}
-      >
-        Skill
-      </label>
-      <input
-        value={skill}
-        onChange={(event) => setSkill(event.target.value)}
-        id="skillInput"
-      ></input>
-      <button style={{ marginLeft: "10px" }} onClick={addNewCard}>
-        Add
-      </button>
+      <AddTradingCard addCard={addCard} />
+      <h2>Trading Cards</h2>
+      <div className="grid">{tradingCards}</div>
     </React.Fragment>
-  );
+  
+  
+  )
 }
+
+
+
+
+
+ReactDOM.render(<TradingCardContainer />, document.getElementById('container'));
