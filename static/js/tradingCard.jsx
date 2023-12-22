@@ -61,15 +61,32 @@ function TradingCard(props) {
 
 function TradingCardContainer() {
 
+  // TradingCardContainer needs to know about all the trading cards
+  const [cards, setCards] = React.useState([])
+
   React.useEffect(() => {
     // stuff we want to happen every time the component renders
-  })
-  const floatCard = {
-    name: 'Float',
-    skill: 'baking pretzels',
-    imgUrl: '/static/img/float.jpg'
-  };
-  const [cards, setCards] = React.useState([floatCard])
+    fetch('/cards.json')
+    // first .then parses our data as JSON
+    // second .then takes that info. and updates our components state with it 
+    // using the method we got back from useState 
+    .then((response) => response.json())
+    .then((data) => setCards(data.cards))
+  }, [])
+    // we might want to pass in more than one argument to control
+    // if we skip the effect or not, we pass the min as an array []
+
+    // if array is empty, then the effect will only run exactly one time 
+    //  - when component first renders
+    // we only need to fetch the deck info once, this is exactly what we want 
+
+
+  // our useState was [floatCard]
+  // const floatCard = {
+  //   name: 'Float',
+  //   skill: 'baking pretzels',
+  //   imgUrl: '/static/img/float.jpg'
+  // };
 
   const tradingCards = [];
 
@@ -88,3 +105,6 @@ function TradingCardContainer() {
 }
 
 ReactDOM.render(<TradingCardContainer />, document.getElementById('container'));
+
+
+
